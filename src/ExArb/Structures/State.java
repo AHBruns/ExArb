@@ -7,8 +7,14 @@ public class State {
     public HashMap<Integer, Currency> currencies;
     public HashMap<Integer, Market> markets;
 
+    public State() {
+        this.currencies = new HashMap<>();
+        this.markets = new HashMap<>();
+    }
+
     public State(ArrayList<Currency> currencies) {
         this.currencies = new HashMap<>();
+        this.markets = new HashMap<>();
         for (Currency c : currencies) {
             this.currencies.put(c.id, c);
         }

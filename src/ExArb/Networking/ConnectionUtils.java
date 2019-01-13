@@ -1,5 +1,6 @@
 package ExArb.Networking;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -61,9 +62,15 @@ public class ConnectionUtils {
     }
 
     public static String stream2String(InputStream s) throws IOException {
-        byte[] ar = new byte[s.available()];
-        s.read(ar);
-        return new String(ar);
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[1024];
+        while ((nRead = s.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        buffer.flush();
+        byte[] byteArray = buffer.toByteArray();
+        return new String(byteArray);
     }
 
     public static HashMap<Integer, String> getCurrency_id2ticker_code() {
