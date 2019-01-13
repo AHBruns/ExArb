@@ -1,42 +1,30 @@
 package ExArb.Networking.Parsers;
 
+import ExArb.Networking.ParserUtils;
 import ExArb.Structures.Currency;
 
+import ExArb.Structures.State;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 
-import java.util.HashMap;
-
 public class GetCurrenciesCompanion{
-    static public void parse(JsonReader r, HashMap<Integer, Currency> currencies) throws Exception {
-        r.beginObject();
-        r.skipValue(); // "success"
-        if (!r.nextString().equals("1")) { throw new Exception("Response success flag wasn't true"); }
-        r.skipValue(); // "request"
-        r.skipValue();
-        r.skipValue(); // "message"
-        String msg = r.nextString();
-        if (!msg.equals("")) { System.out.println("Response contained a message: " + msg); }
-        r.skipValue(); // "result"
+    static public void parse(JsonReader r, State s) throws Exception {
+        ParserUtils.parseOffHeader(r);
         r.beginArray();
         while (r.peek() != JsonToken.END_ARRAY) {
             r.beginObject();
             r.skipValue();
             int id = Integer.parseInt(r.nextString());
-            if (!currencies.containsKey(id)) {
-                currencies.put(id, new Currency(id));
-            }
             r.skipValue();
-            currencies.get(id).name = r.nextString();
+            String name = r.nextString();
             r.skipValue();
-            currencies.get(id).ticker = r.nextString();
+            String ticker = r.nextString();
             r.skipValue();
-            currencies.get(id).status = r.nextString();
+            boolean status = r.nextString().equals("online");
             r.skipValue();
             r.skipValue();
+            s.addCurrency(new Currency(id, status, name, ticker)); // add this currency to state
             r.endObject();
         }
-        r.endArray();
-        r.endObject();
     }
 }
