@@ -5,10 +5,13 @@ import ExArb.Networking.Parsers.GetOrderBookCompanion;
 import ExArb.Structures.Market;
 import ExArb.Structures.State;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class PathingManager {
+
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     private State state;
     private ArrayList<ArrayList<Market>> bbs_paths = new ArrayList<>();
@@ -19,6 +22,7 @@ public class PathingManager {
     }
 
     public void buildPaths() {
+        System.out.printf("%sStarting Paths Build%s\n", ANSI_YELLOW, ANSI_RESET);
         for (Market m1 : state.markets.values()) {
             for (Market m2 : m1.getAssociatedMarkets()) {
                 for (Market m3 : m2.getAssociatedMarkets()) {
@@ -45,17 +49,32 @@ public class PathingManager {
     }
 
     public void checkPaths(NetworkManager nm) throws Exception {
-        System.out.println("Starting BBS Path Checks");
+        System.out.printf("%sStarting BBS Path Checks%s\n", ANSI_YELLOW, ANSI_RESET);
         for (ArrayList<Market> path : bbs_paths) {
             GetOrderBookCompanion.parse(path.get(0).id, nm.ExecuteGetOrderBook(path.get(0).id), state);
             GetOrderBookCompanion.parse(path.get(1).id, nm.ExecuteGetOrderBook(path.get(1).id), state);
             GetOrderBookCompanion.parse(path.get(2).id, nm.ExecuteGetOrderBook(path.get(2).id), state);
             double simPercentReturn = simBBSPath(path);
-            if (simPercentReturn >= .5) {
-                System.out.println("return: " + simPercentReturn + " | " +
-                        path.get(0).currency_b.ticker + "/" + path.get(0).currency_a.ticker + " -> " +
-                        path.get(1).currency_b.ticker + "/" + path.get(1).currency_a.ticker + " -> " +
-                        path.get(2).currency_b.ticker + "/" + path.get(2).currency_a.ticker);
+            if (simPercentReturn >= .5 && simPercentReturn < 1) {
+                System.out.printf("return: %.5f%% | %5s/%-5s  ->  %5s/%-5s  ->  %5s/%-5s |\n",
+                        simPercentReturn,
+                        path.get(0).currency_b.ticker,
+                        path.get(0).currency_a.ticker,
+                        path.get(1).currency_b.ticker,
+                        path.get(1).currency_a.ticker,
+                        path.get(2).currency_b.ticker,
+                        path.get(2).currency_a.ticker);
+            } else if (simPercentReturn >= 1) {
+                System.out.printf("\n%sreturn: %.5f%% | %5s/%-5s  ->  %5s/%-5s  ->  %5s/%-5s | opportunity!%s\n\n",
+                        ANSI_GREEN,
+                        simPercentReturn,
+                        path.get(0).currency_b.ticker,
+                        path.get(0).currency_a.ticker,
+                        path.get(1).currency_b.ticker,
+                        path.get(1).currency_a.ticker,
+                        path.get(2).currency_b.ticker,
+                        path.get(2).currency_a.ticker,
+                        ANSI_RESET);
             }
         }
     }
@@ -71,16 +90,4 @@ public class PathingManager {
         } catch (IndexOutOfBoundsException e) { }
         return 0.0;
     }
-
-//    public Double simBSSPath(ArrayList<Market> path) {
-//        try {
-//            // TODO | flatten order books and sim fees
-//            double initialValue = 1;
-//            double m1quant = initialValue / path.get(0).sell_orders.get(0).price;
-//            double m2quant = m1quant * path.get(1).buy_orders.get(0).price;
-//            double m3quant = m2quant * path.get(2).buy_orders.get(0).price;
-//            return m3quant / initialValue;
-//        } catch (IndexOutOfBoundsException e) { System.out.print("empty order book! "); }
-//        return 0.0;
-//    }
 }
