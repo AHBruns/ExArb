@@ -1,12 +1,12 @@
 package ExArb.Structures;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Currency {
 
     public Integer id;
     public String name, ticker;
-    public ArrayList<Market> markets;
+    public HashMap<Integer, Market> markets = new HashMap<>();
     public Boolean status;
 
     public Currency(int id) {
@@ -25,7 +25,7 @@ public class Currency {
         this.ticker = ticker;
     }
 
-    public Currency(int id, boolean status, String name, String ticker, ArrayList<Market> markets) {
+    public Currency(int id, boolean status, String name, String ticker, HashMap<Integer, Market> markets) {
         this.id = id;
         this.status = status;
         this.name = name;
@@ -42,7 +42,7 @@ public class Currency {
         if (c.status != null) { status = c.status; }
         if (c.name != null) { name = c.name; }
         if (c.ticker != null) { ticker = c.ticker; }
-        if (c.markets != null) { markets = c.markets; }
+        if (!c.markets.isEmpty()) { markets = c.markets; }
     }
 
 }

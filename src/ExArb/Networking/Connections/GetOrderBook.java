@@ -18,11 +18,10 @@ public class GetOrderBook extends GenericConnection {
     }
 
     public JsonReader Execute() throws IOException {
-        return new JsonReader(
-                new StringReader(
-                        ConnectionUtils.stream2String(
-                                ConnectionUtils.openStream(
-                                        ConnectionUtils.buildUrl(url_base, paramName, String.valueOf(market_id))))));
+        String s = ConnectionUtils.stream2String(
+                ConnectionUtils.openStream(
+                        ConnectionUtils.buildUrl(url_base, paramName, String.valueOf(market_id))));
+        return new JsonReader(new StringReader(s));
     }
 
 }

@@ -19,7 +19,11 @@ public class Core {
         GetCurrenciesCompanion.parse(nm.ExecuteGetCurrencies(), state);
         GetMarketsCompanion.parse(nm.ExecuteGetMarkets(), state);
 
-
+        // look for opportunities
+        while (true) {
+            pm.buildPaths();
+            pm.checkPaths(nm);
+        }
     }
 
 }

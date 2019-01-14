@@ -71,6 +71,13 @@ public class Market {
         if (m.active != null) { active = m.active; }
     }
 
+    public ArrayList<Market> getAssociatedMarkets() {
+        ArrayList<Market> ret = new ArrayList<>();
+        ret.addAll(currency_a.markets.values());
+        ret.addAll(currency_b.markets.values());
+        return ret;
+    }
+
     // TODO | implement reverse update which updates the market data members of Currency objects involved in this market
 
 
