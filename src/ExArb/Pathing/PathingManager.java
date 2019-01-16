@@ -3,6 +3,7 @@ package ExArb.Pathing;
 import ExArb.Networking.NetworkManager;
 import ExArb.Networking.Parsers.GetOrderBookCompanion;
 import ExArb.Structures.Market;
+import ExArb.Structures.Order;
 import ExArb.Structures.State;
 
 import java.util.ArrayList;
@@ -55,8 +56,8 @@ public class PathingManager {
             GetOrderBookCompanion.parse(path.get(1).id, nm.ExecuteGetOrderBook(path.get(1).id), state);
             GetOrderBookCompanion.parse(path.get(2).id, nm.ExecuteGetOrderBook(path.get(2).id), state);
             double simPercentReturn = simBBSPath(path);
-            if (simPercentReturn >= .5 && simPercentReturn < 1) {
-                System.out.printf("return: %.5f%% | %5s/%-5s  ->  %5s/%-5s  ->  %5s/%-5s |\n",
+            if (simPercentReturn > 0.0 && simPercentReturn < 1) {
+                System.out.printf("return: %.5f%% | %8s/%-8s  ->  %8s/%-8s  ->  %8s/%-8s |\n",
                         simPercentReturn,
                         path.get(0).currency_b.ticker,
                         path.get(0).currency_a.ticker,
@@ -65,7 +66,7 @@ public class PathingManager {
                         path.get(2).currency_b.ticker,
                         path.get(2).currency_a.ticker);
             } else if (simPercentReturn >= 1) {
-                System.out.printf("\n%sreturn: %.5f%% | %5s/%-5s  ->  %5s/%-5s  ->  %5s/%-5s | opportunity!%s\n\n",
+                System.out.printf("\n%sreturn: %.5f%% | %8s/%-8s  ->  %8s/%-8s  ->  %8s/%-8s | opportunity!%s\n\n",
                         ANSI_GREEN,
                         simPercentReturn,
                         path.get(0).currency_b.ticker,
@@ -75,19 +76,53 @@ public class PathingManager {
                         path.get(2).currency_b.ticker,
                         path.get(2).currency_a.ticker,
                         ANSI_RESET);
+            } else {
+                System.out.printf("empty order book | %8s/%-8s  ->  %8s/%-8s  ->  %8s/%-8s |\n",
+                        path.get(0).currency_b.ticker,
+                        path.get(0).currency_a.ticker,
+                        path.get(1).currency_b.ticker,
+                        path.get(1).currency_a.ticker,
+                        path.get(2).currency_b.ticker,
+                        path.get(2).currency_a.ticker);
             }
         }
     }
 
     public Double simBBSPath(ArrayList<Market> path) {
-        // TODO | flatten order books and sim fees
         try {
-            double initialValue = 1;
-            double m1quant = initialValue / path.get(0).sell_orders.get(0).price;
-            double m2quant = m1quant / path.get(1).sell_orders.get(0).price;
-            double m3quant = m2quant * path.get(2).buy_orders.get(0).price;
-            return m3quant / initialValue;
+            double initialValue = 0.0001;
+            double minValue = 0.0001;
+            Double m1price = flattenOrderBookToPrice(path.get(0).sell_orders, minValue);
+            if (m1price == null) { return 0.0; }
+            double m1quant = initialValue / m1price;
+            Double m2price = flattenOrderBookToPrice(path.get(1).sell_orders, minValue);
+            if (m2price == null) { return 0.0; }
+            double m2quant = m1quant / m2price;
+            Double m3price =  flattenOrderBookToPrice(path.get(2).buy_orders, minValue);
+            if (m3price == null) { return 0.0; }
+            double m3quant = m2quant * m3price;
+            return (m3quant * 0.99550674662) / initialValue;
         } catch (IndexOutOfBoundsException e) { }
         return 0.0;
+    }
+
+    public Double flattenOrderBookToPrice(ArrayList<Order> orderBook, double targetQuant) {
+        double price = 0.0;
+        double curQuant = 0.0;
+        double quantDelta = targetQuant - curQuant;
+        for (Order o : orderBook) {
+            if (o.quantity < quantDelta) {
+                curQuant += o.quantity;
+                price += o.price * (o.quantity / targetQuant);
+            } else if (o.quantity >= quantDelta) {
+                curQuant = targetQuant;
+                price += o.price * (quantDelta / targetQuant);
+            }
+            quantDelta = targetQuant - curQuant;
+        }
+        if (quantDelta > 0) {
+            return null;
+        }
+        return price;
     }
 }
