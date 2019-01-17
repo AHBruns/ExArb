@@ -5,6 +5,10 @@ import ExArb.Networking.Connections.BalanceWatchSocket.BalanceWatchSocket;
 import ExArb.Structures.OrderResponse;
 import ExArb.Structures.PathExecution;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
 
 public class ExecutionManager {
 
@@ -31,6 +35,7 @@ public class ExecutionManager {
             System.out.println("\tWaiting for balance update 3");
         }
         System.out.print("\tOrder successfully executed...");
+        Files.write(Paths.get("/Users/alex.bruns/ExArb/src/ExArb/executionLog.txt"), ("\n" + pe.ids + pe.quants + pe.prices).getBytes(), StandardOpenOption.APPEND); // log order executions
         return true;
     }
 }

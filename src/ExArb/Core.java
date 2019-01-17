@@ -1,7 +1,6 @@
 package ExArb;
 
 import ExArb.Execution.ExecutionEndpoints.AddOrder;
-import ExArb.Execution.ExecutionManager;
 import ExArb.Networking.NetworkManager;
 import ExArb.Networking.Parsers.GetCurrenciesCompanion;
 import ExArb.Networking.Parsers.GetMarketsCompanion;
