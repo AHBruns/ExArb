@@ -11,39 +11,36 @@ import java.util.HashMap;
 public class AddOrder {
 
     private String url = "https://www.coinexchange.io/add/market/order";
-    private String form_token = "xxx";
+    private HashMap<Integer, String> form_token = new HashMap<>();
 
-    public AddOrder() {
-        try {
-            Execute(1019, 1, 100000, 0.00000001);
-        } catch (Exception e) {
-            e.printStackTrace();
+    public JsonReader Execute(int id, int type, double amount, double price) throws IOException {
+        if (form_token.containsKey(id)) {
+            HashMap<String, String> data = new HashMap<>();
+            data.put("market_id", String.valueOf(id));
+            data.put("type", String.valueOf(type));
+            data.put("amount", String.valueOf(amount));
+            data.put("price", String.valueOf(price));
+            data.put("form_token", form_token.get(id));
+            return new JsonReader(new StringReader(ConnectionUtils.stream2StringGzip(ConnectionUtils.openHiddenAPIStream(url, data))));
         }
-    }
-
-    public JsonReader Execute(int id, int type, int amount, double price) throws IOException {
         HashMap<String, String> data = new HashMap<>();
         data.put("market_id", String.valueOf(id));
         data.put("type", String.valueOf(type));
         data.put("amount", String.valueOf(amount));
         data.put("price", String.valueOf(price));
-        data.put("form_token", this.form_token);
-//        System.out.println("data: " + data);
-        String out = ConnectionUtils.stream2StringGzip(ConnectionUtils.openHiddenAPIStream(url, data));
-//        System.out.println(out);
-        JsonReader r1 = new JsonReader(new StringReader(out));
+        data.put("form_token", "no_id");
+        JsonReader r1 = new JsonReader(new StringReader(ConnectionUtils.stream2StringGzip(ConnectionUtils.openHiddenAPIStream(url, data))));
         r1.beginObject();
         while (r1.peek() != JsonToken.END_OBJECT) {
             String name = r1.nextName();
             if (name.equals("form_token")) {
                 String newFormToken = r1.nextString();
-//                System.out.println("updating the form token: " + newFormToken);
-                this.form_token = newFormToken;
+                this.form_token.put(id, newFormToken);
             } else {
                 r1.nextString();
             }
         }
-        JsonReader r2 = new JsonReader(new StringReader(out));
-        return r2;
+        data.put("form_token", form_token.get(id));
+        return new JsonReader(new StringReader(ConnectionUtils.stream2StringGzip(ConnectionUtils.openHiddenAPIStream(url, data))));
     }
 }

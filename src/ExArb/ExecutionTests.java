@@ -8,7 +8,7 @@ public class ExecutionTests {
 
     public static void main(String[] args) throws Exception {
         AddOrder ao = new AddOrder();
-        OrderResponse or = AddOrderCompanion.parse(ao.Execute(1019, 1, 100000, 0.00000001));
+        OrderResponse or = AddOrderCompanion.parse(ao.Execute(18, 1, 10001, 0.00000001));
         System.out.println(or.status);
         System.out.println(or.message);
         System.out.println(or.old_form_token);

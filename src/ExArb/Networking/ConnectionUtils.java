@@ -10,7 +10,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -66,7 +65,7 @@ public class ConnectionUtils {
         con.setDoOutput(true);
         con.setDoInput(true);
         con.setRequestMethod("POST");
-        con.setRequestProperty("cookie", "PHPSESSID=lixLfKXcX2W9AtwUh0Yt7pl0TS7CsrS799La7YUhUIO9pTU9OyOIq5WQv50Ie7Varxiesqdw6uLSgyEqihU%2C32; REMEMBERME=ajhVSmcwVnI5alJST01KZm93ZG43SjhXMWI3NW1VcjF2TjlTVm9nUEFQWFpHMldpWDlxWXQ4enF4b0RRcWRLQkw3Q3hXRlR6cld4VkJ1VFdPTklTOVE9PTpyWHBnQ2J6cFg4TDJ1Sy9vdWFhcFkwWWpXM0VJSDlrR1hqWnNJQnk4aVJlRGVuWGFWSG9zN0hraHc3WEVrbjJaQzdKQUo0MWFJS0t1VDNLWXUveFhWdz09; incap_ses_120_1322663=XUmwWTAsqxvZghbGLFaqAQLeP1wAAAAAR0nv9+8OyMX/vEmrv7o/Tg==;");
+        con.setRequestProperty("cookie", "PHPSESSID=ZfqGDkr3Tf9xTn6R1R6FsoW8mnlluZi8NOF8r%2ChQXhlikE5AVrl6csJtxUzPZT-pwyTPaCSeZs8gOA2wo02l20; REMEMBERME=NFh2NUVhUCtGNGlVSlJCd0x6bHJwSmN4Rm9nT29KOVh6V21ZSktNaXJOOVdKVW93QnhONDM3MmtkYjZScmxxTXZUekQycldIWm5LMEd6cG52VVc4N1E9PTpscWlkTGZZWWZjdi8zUW9jMWFPUjhtZW4rOWYxdmhKUTIvSHZoM2pnNU1JM2tYb0xiT2ZFQSs0U1AwanFPckhENHhhYjJWeWhRajlHQVdFM0szcFczdz09");
         con.setRequestProperty("origin", "https://www.coinexchange.io");
         con.setRequestProperty("accept-encoding", "gzip, deflate, br");
         con.setRequestProperty("accept-language", "en-US,en;q=0.9");
@@ -130,7 +129,7 @@ public class ConnectionUtils {
         buffer.flush();
         byte[] byteArray = buffer.toByteArray();
 
-        // source : https://stackoverflow.com/questions/12531579/uncompress-a-gzip-string-in-java
+        /*** source : https://stackoverflow.com/questions/12531579/uncompress-a-gzip-string-in-java ***/
         java.io.ByteArrayInputStream bytein = new java.io.ByteArrayInputStream(byteArray);
         java.util.zip.GZIPInputStream gzin = new java.util.zip.GZIPInputStream(bytein);
         java.io.ByteArrayOutputStream byteout = new java.io.ByteArrayOutputStream();
@@ -143,6 +142,8 @@ public class ConnectionUtils {
             }
         }
         byte uncompressed[] = byteout.toByteArray();
+        /*** -------------------------------------------------------------------------------------- ***/
+
         return new String(uncompressed);
     }
 

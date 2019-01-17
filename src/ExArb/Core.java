@@ -1,5 +1,7 @@
 package ExArb;
 
+import ExArb.Execution.ExecutionEndpoints.AddOrder;
+import ExArb.Execution.ExecutionManager;
 import ExArb.Networking.NetworkManager;
 import ExArb.Networking.Parsers.GetCurrenciesCompanion;
 import ExArb.Networking.Parsers.GetMarketsCompanion;
@@ -14,6 +16,7 @@ public class Core {
         State state = new State();
         NetworkManager nm = new NetworkManager();
         PathingManager pm = new PathingManager(state);
+        AddOrder ao = new AddOrder();
 
         // setup state with basic info
         GetCurrenciesCompanion.parse(nm.ExecuteGetCurrencies(), state);
@@ -22,7 +25,7 @@ public class Core {
         // look for opportunities
         while (true) {
             pm.buildPaths();
-            pm.checkPaths(nm);
+            pm.checkPaths(nm, ao);
         }
     }
 
