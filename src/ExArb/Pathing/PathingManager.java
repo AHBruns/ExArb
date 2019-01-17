@@ -7,6 +7,7 @@ import ExArb.Structures.Order;
 import ExArb.Structures.State;
 
 import java.util.ArrayList;
+import java.time.Clock;
 
 public class PathingManager {
 
@@ -57,7 +58,8 @@ public class PathingManager {
             GetOrderBookCompanion.parse(path.get(2).id, nm.ExecuteGetOrderBook(path.get(2).id), state);
             double simPercentReturn = simBBSPath(path);
             if (simPercentReturn > 0.0 && simPercentReturn < 1) {
-                System.out.printf("return: %.5f%% | %8s/%-8s  ->  %8s/%-8s  ->  %8s/%-8s |\n",
+                System.out.printf("%24s | return: %.5f%% | %8s/%-8s  ->  %8s/%-8s  ->  %8s/%-8s |\n",
+                        String.valueOf(Clock.systemUTC().instant()),
                         simPercentReturn,
                         path.get(0).currency_b.ticker,
                         path.get(0).currency_a.ticker,
@@ -66,18 +68,25 @@ public class PathingManager {
                         path.get(2).currency_b.ticker,
                         path.get(2).currency_a.ticker);
             } else if (simPercentReturn >= 1) {
-                System.out.printf("\n%sreturn: %.5f%% | %8s/%-8s  ->  %8s/%-8s  ->  %8s/%-8s | opportunity!%s\n\n",
-                        ANSI_GREEN,
-                        simPercentReturn,
-                        path.get(0).currency_b.ticker,
-                        path.get(0).currency_a.ticker,
-                        path.get(1).currency_b.ticker,
-                        path.get(1).currency_a.ticker,
-                        path.get(2).currency_b.ticker,
-                        path.get(2).currency_a.ticker,
-                        ANSI_RESET);
+                do {
+                    System.out.printf("\n%24s%s | return: %.5f%% | %8s/%-8s  ->  %8s/%-8s  ->  %8s/%-8s | opportunity!%s\n\n\u0007",
+                            ANSI_GREEN,
+                            String.valueOf(Clock.systemUTC().instant()),
+                            simPercentReturn,
+                            path.get(0).currency_b.ticker,
+                            path.get(0).currency_a.ticker,
+                            path.get(1).currency_b.ticker,
+                            path.get(1).currency_a.ticker,
+                            path.get(2).currency_b.ticker,
+                            path.get(2).currency_a.ticker,
+                            ANSI_RESET);
+                    GetOrderBookCompanion.parse(path.get(0).id, nm.ExecuteGetOrderBook(path.get(0).id), state);
+                    GetOrderBookCompanion.parse(path.get(1).id, nm.ExecuteGetOrderBook(path.get(1).id), state);
+                    GetOrderBookCompanion.parse(path.get(2).id, nm.ExecuteGetOrderBook(path.get(2).id), state);
+                } while (simBBSPath(path) >= 1);
             } else {
-                System.out.printf("empty order book | %8s/%-8s  ->  %8s/%-8s  ->  %8s/%-8s |\n",
+                System.out.printf("%24s | empty order book | %8s/%-8s  ->  %8s/%-8s  ->  %8s/%-8s |\n",
+                        String.valueOf(Clock.systemUTC().instant()),
                         path.get(0).currency_b.ticker,
                         path.get(0).currency_a.ticker,
                         path.get(1).currency_b.ticker,
