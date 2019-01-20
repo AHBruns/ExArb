@@ -12,7 +12,7 @@ public class GetMarkets extends GenericConnection {
     private final static String url_base = ConnectionUtils.url_base + "/getmarkets";
 
     public JsonReader Execute() throws IOException {
-        return new JsonReader(new StringReader(ConnectionUtils.stream2String(ConnectionUtils.openStream(url_base))));
+        return new JsonReader(new StringReader(ConnectionUtils.stream2StringGzip(ConnectionUtils.openStream(url_base))));
     }
 
 }

@@ -20,7 +20,7 @@ public class GetMarketSummary extends GenericConnection {
     public JsonReader Execute() throws IOException {
         return new JsonReader(
                 new StringReader(
-                        ConnectionUtils.stream2String(
+                        ConnectionUtils.stream2StringGzip(
                                 ConnectionUtils.openStream(
                                         ConnectionUtils.buildUrl(url_base, paramName, String.valueOf(market_id))))));
     }

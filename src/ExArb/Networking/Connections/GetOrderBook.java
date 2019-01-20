@@ -18,7 +18,7 @@ public class GetOrderBook extends GenericConnection {
     }
 
     public JsonReader Execute() throws IOException {
-        String s = ConnectionUtils.stream2String(
+        String s = ConnectionUtils.stream2StringGzip(
                 ConnectionUtils.openStream(
                         ConnectionUtils.buildUrl(url_base, paramName, String.valueOf(market_id))));
         return new JsonReader(new StringReader(s));

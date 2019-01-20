@@ -13,7 +13,7 @@ public class AddOrder {
     private String url = "https://www.coinexchange.io/add/market/order";
     private HashMap<Integer, String> form_token = new HashMap<>();
 
-    public JsonReader Execute(int id, int type, double amount, double price) throws IOException {
+    public JsonReader Execute(String curA, String curB, int id, int type, double amount, double price) throws IOException {
         if (form_token.containsKey(id)) {
             HashMap<String, String> data = new HashMap<>();
             data.put("market_id", String.valueOf(id));
@@ -21,7 +21,7 @@ public class AddOrder {
             data.put("amount", String.valueOf(amount));
             data.put("price", String.valueOf(price));
             data.put("form_token", form_token.get(id));
-            return new JsonReader(new StringReader(ConnectionUtils.stream2StringGzip(ConnectionUtils.openHiddenAPIStream(url, data))));
+            return new JsonReader(new StringReader(ConnectionUtils.stream2StringGzip(ConnectionUtils.openHiddenAPIStream(url, data, curA, curB))));
         }
         HashMap<String, String> data = new HashMap<>();
         data.put("market_id", String.valueOf(id));
@@ -29,7 +29,7 @@ public class AddOrder {
         data.put("amount", String.valueOf(amount));
         data.put("price", String.valueOf(price));
         data.put("form_token", "no_id");
-        JsonReader r1 = new JsonReader(new StringReader(ConnectionUtils.stream2StringGzip(ConnectionUtils.openHiddenAPIStream(url, data))));
+        JsonReader r1 = new JsonReader(new StringReader(ConnectionUtils.stream2StringGzip(ConnectionUtils.openHiddenAPIStream(url, data, curA, curB))));
         r1.beginObject();
         while (r1.peek() != JsonToken.END_OBJECT) {
             String name = r1.nextName();
@@ -41,6 +41,6 @@ public class AddOrder {
             }
         }
         data.put("form_token", form_token.get(id));
-        return new JsonReader(new StringReader(ConnectionUtils.stream2StringGzip(ConnectionUtils.openHiddenAPIStream(url, data))));
+        return new JsonReader(new StringReader(ConnectionUtils.stream2StringGzip(ConnectionUtils.openHiddenAPIStream(url, data, curA, curB))));
     }
 }

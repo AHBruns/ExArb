@@ -21,6 +21,7 @@ public class WebsocketClientEndpoint {
     Session userSession = null;
     private MessageHandler messageHandler;
 
+
     public WebsocketClientEndpoint(URI endpointURI) {
         try {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
